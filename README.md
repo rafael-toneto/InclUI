@@ -1,4 +1,4 @@
-# Swift Accessibility Checker
+# InclUI
 
 Ferramenta de análise estática para antecipar riscos de acessibilidade em código SwiftUI.
 O checker percorre a árvore sintática com SwiftSyntax, aplica nove regras e gera warnings
@@ -46,20 +46,20 @@ O package usa SwiftSyntax 602.0.0, correspondente à linha da toolchain Swift 6.
 
 ## Janela para executar a análise
 
-No Finder, abra `scripts/AbrirChecker.command` uma vez. O lançador compila a interface,
-cria `~/Applications/Swift Accessibility Checker.app` fora deste repositório e abre a
+No Finder, abra `scripts/AbrirInclUI.command` uma vez. O lançador compila a interface,
+cria `~/Applications/InclUI.app` fora deste repositório e abre a
 janela. Nas próximas vezes, abra o app diretamente pelo Finder. Se atualizar o código,
 execute o lançador novamente para atualizar o app instalado. Também é possível iniciar
 a interface pelo terminal, dentro da pasta deste package:
 
 ```bash
-swift run swift-accessibility-checker-gui
+swift run inclui-gui
 ```
 
 Escolha a pasta dos fontes do app, clique em **Gerar relatórios** e o HTML abrirá no
 navegador. A janela mostra quantos arquivos foram analisados, quantos avisos foram
 gerados e se houve problemas de leitura. Ela lembra as pastas escolhidas recentemente.
-Os relatórios são salvos por padrão em `~/Documents/SwiftAccessibilityChecker-Relatorios`,
+Os relatórios são salvos por padrão em `~/Documents/InclUI-Relatorios`,
 em uma pasta nova para cada execução; o destino pode ser alterado na janela. Ao analisar
 um projeto externo, escolha a pasta do app para não incluir testes ou outros targets.
 Os avisos indicam trechos para revisão; a análise não confirma barreiras na interface.
@@ -70,7 +70,7 @@ No terminal, dentro da pasta deste package:
 
 ```bash
 swift build
-swift run swift-accessibility-checker --report-directory Relatorios Fixtures
+swift run inclui --report-directory Relatorios Fixtures
 open Relatorios/report.html
 ```
 
@@ -98,25 +98,25 @@ que dependem do layout ou do comportamento em execução.
 
 ```bash
 # Ajuda e opções disponíveis
-swift run swift-accessibility-checker --help
+swift run inclui --help
 
 # Warnings clicáveis no Xcode (formato padrão)
-swift run swift-accessibility-checker Fixtures/InaccessibleExample.swift
+swift run inclui Fixtures/InaccessibleExample.swift
 
 # Somente um formato, salvo em arquivo
-swift run swift-accessibility-checker --format html --output Relatorios/revisao.html Fixtures
-swift run swift-accessibility-checker --format markdown --output Relatorios/revisao.md Fixtures
-swift run swift-accessibility-checker --format text Fixtures
-swift run swift-accessibility-checker --format json --output Relatorios/revisao.json Fixtures
+swift run inclui --format html --output Relatorios/revisao.html Fixtures
+swift run inclui --format markdown --output Relatorios/revisao.md Fixtures
+swift run inclui --format text Fixtures
+swift run inclui --format json --output Relatorios/revisao.json Fixtures
 
 # Vários arquivos explícitos, como no Build Tool Plugin
-swift run swift-accessibility-checker ViewA.swift ViewB.swift
+swift run inclui ViewA.swift ViewB.swift
 
 # Testes da ferramenta
 swift test
 
 # Testes de aceitação da CLI, passando o executável compilado
-python3 scripts/test_cli.py /caminho/para/swift-accessibility-checker
+python3 scripts/test_cli.py /caminho/para/inclui
 ```
 
 Warnings seguem o formato reconhecido pelo Xcode:
@@ -171,17 +171,17 @@ ordenadas facilitam comparações entre execuções; a data muda a cada análise
 3. Escolha **Add Local...** e selecione a pasta deste package:
 
    ```text
-   /caminho/para/SwiftAccessibilityChecker
+   /caminho/para/InclUI
    ```
 
 4. Selecione o target do aplicativo e abra **Build Phases**.
 5. Adicione uma fase **Run Build Tool Plug-ins**, caso ela ainda não exista.
 6. Dentro dessa fase, pressione `+` e selecione
-   **SwiftAccessibilityCheckerPlugin**.
+   **InclUIPlugin**.
 7. Compile o target e autorize o plugin quando o Xcode solicitar confiança.
 
-Não adicione `SwiftAccessibilityCheckerCore` ou
-`SwiftAccessibilityCheckerAnalyzer` em **Frameworks, Libraries, and Embedded
+Não adicione `InclUICore` ou
+`InclUIAnalyzer` em **Frameworks, Libraries, and Embedded
 Content**. Esses módulos são ferramentas internas executadas no Mac host e não devem
 ser vinculados ao binário iOS. O manifesto não os expõe como produtos para evitar essa
 associação acidental.
@@ -197,9 +197,9 @@ diagnósticos clicáveis no Issue Navigator:
 /path/ProfileView.swift:18:9: warning: Fixed font size may not support Dynamic Type [SAC003] [medium]
 ```
 
-O plugin também gera os cinco formatos na pasta `SwiftAccessibilityReport` do seu
+O plugin também gera os cinco formatos na pasta `InclUIReport` do seu
 diretório de trabalho de build. No **Report Navigator** (**⌘9**), abra o log da fase
-do checker e procure `SwiftAccessibilityChecker: relatório disponível em`. Copie o
+do checker e procure `InclUI: relatório disponível em`. Copie o
 caminho exibido e abra o `report.html` no navegador, por exemplo com `open "caminho"`.
 
 Esses relatórios são intermediários privados do build: podem ser removidos ao limpar
@@ -235,7 +235,7 @@ Um package consumidor pode ativar o plugin em targets específicos:
 let package = Package(
     dependencies: [
         .package(
-            path: "../SwiftAccessibilityChecker"
+            path: "../InclUI"
         )
     ],
     targets: [
@@ -243,8 +243,8 @@ let package = Package(
             name: "MyTarget",
             plugins: [
                 .plugin(
-                    name: "SwiftAccessibilityCheckerPlugin",
-                    package: "SwiftAccessibilityChecker"
+                    name: "InclUIPlugin",
+                    package: "InclUI"
                 )
             ]
         )

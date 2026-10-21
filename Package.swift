@@ -3,22 +3,22 @@
 import PackageDescription
 
 let package = Package(
-    name: "SwiftAccessibilityChecker",
+    name: "InclUI",
     platforms: [
         .macOS(.v13)
     ],
     products: [
         .executable(
-            name: "swift-accessibility-checker",
-            targets: ["swift-accessibility-checker"]
+            name: "inclui",
+            targets: ["inclui"]
         ),
         .executable(
-            name: "swift-accessibility-checker-gui",
-            targets: ["swift-accessibility-checker-gui"]
+            name: "inclui-gui",
+            targets: ["inclui-gui"]
         ),
         .plugin(
-            name: "SwiftAccessibilityCheckerPlugin",
-            targets: ["SwiftAccessibilityCheckerPlugin"]
+            name: "InclUIPlugin",
+            targets: ["InclUIPlugin"]
         )
     ],
     dependencies: [
@@ -33,53 +33,53 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "SwiftAccessibilityCheckerCore"
+            name: "InclUICore"
         ),
         .target(
-            name: "SwiftAccessibilityCheckerAnalyzer",
+            name: "InclUIAnalyzer",
             dependencies: [
-                "SwiftAccessibilityCheckerCore",
+                "InclUICore",
                 .product(name: "SwiftParser", package: "swift-syntax"),
                 .product(name: "SwiftSyntax", package: "swift-syntax")
             ]
         ),
         .target(
-            name: "SwiftAccessibilityCheckerReporter",
+            name: "InclUIReporter",
             dependencies: [
-                "SwiftAccessibilityCheckerCore"
+                "InclUICore"
             ]
         ),
         .executableTarget(
-            name: "swift-accessibility-checker",
+            name: "inclui",
             dependencies: [
-                "SwiftAccessibilityCheckerAnalyzer",
-                "SwiftAccessibilityCheckerCore",
-                "SwiftAccessibilityCheckerReporter"
+                "InclUIAnalyzer",
+                "InclUICore",
+                "InclUIReporter"
             ],
-            path: "Sources/SwiftAccessibilityCheckerCLI"
+            path: "Sources/InclUICLI"
         ),
         .executableTarget(
-            name: "swift-accessibility-checker-gui",
+            name: "inclui-gui",
             dependencies: [
-                "SwiftAccessibilityCheckerAnalyzer",
-                "SwiftAccessibilityCheckerCore",
-                "SwiftAccessibilityCheckerReporter"
+                "InclUIAnalyzer",
+                "InclUICore",
+                "InclUIReporter"
             ],
-            path: "Sources/SwiftAccessibilityCheckerGUI"
+            path: "Sources/InclUIGUI"
         ),
         .plugin(
-            name: "SwiftAccessibilityCheckerPlugin",
+            name: "InclUIPlugin",
             capability: .buildTool(),
             dependencies: [
-                "swift-accessibility-checker"
+                "inclui"
             ]
         ),
         .testTarget(
-            name: "SwiftAccessibilityCheckerTests",
+            name: "InclUITests",
             dependencies: [
-                "SwiftAccessibilityCheckerAnalyzer",
-                "SwiftAccessibilityCheckerCore",
-                "SwiftAccessibilityCheckerReporter",
+                "InclUIAnalyzer",
+                "InclUICore",
+                "InclUIReporter",
                 .product(name: "Testing", package: "swift-testing")
             ]
         )
