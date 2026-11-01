@@ -9,7 +9,9 @@ public enum AccessibilityRuleCatalog {
             EmptyAccessibilityMetadataRule(),
             HiddenInteractiveControlRule(),
             GestureOnlyInteractionRule(),
-            RestrictedDynamicTypeRule()
+            RestrictedDynamicTypeRule(),
+            CustomDragGestureRule(),
+            RepeatingMotionRule()
         ]
     }
 }

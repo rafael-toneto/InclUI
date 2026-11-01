@@ -37,7 +37,9 @@ struct FixtureCoverageTests {
                 "SAC006",
                 "SAC007",
                 "SAC008",
-                "SAC009"
+                "SAC009",
+                "SAC010",
+                "SAC011"
             ]
         )
         #expect(diagnostics.allSatisfy { $0.sourceExcerpt?.isEmpty == false })

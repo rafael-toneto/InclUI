@@ -122,6 +122,34 @@ public enum AccessibilityRuleDefinitions {
         ]
     )
 
+    public static let customDragGesture = AccessibilityRuleDefinition(
+        identifier: "SAC010",
+        title: "Custom drag without an accessible alternative",
+        description: "Custom drag interaction may be unavailable through assistive technologies",
+        severity: .high,
+        rationale: "A drag-only action can block a task for people who cannot reproduce the gesture with their input method.",
+        suggestion: "Offer the same result through a standard control or an accessibility action, and test it with VoiceOver and Switch Control.",
+        references: [
+            apple("Accessible controls", "https://developer.apple.com/documentation/swiftui/accessible-controls"),
+            apple("Gestures", "https://developer.apple.com/documentation/swiftui/gestures"),
+            wcag("2.1.1 Keyboard", "keyboard")
+        ]
+    )
+
+    public static let repeatingMotion = AccessibilityRuleDefinition(
+        identifier: "SAC011",
+        title: "Repeating animation without Reduce Motion check",
+        description: "Repeating animation may ignore the system Reduce Motion preference",
+        severity: .medium,
+        rationale: "Automatic repetitive motion can distract or cause discomfort when a person requests reduced motion.",
+        suggestion: "Read accessibilityReduceMotion and provide a still or reduced-motion presentation when it is enabled.",
+        references: [
+            apple("Accessibility", "https://developer.apple.com/design/human-interface-guidelines/accessibility"),
+            apple("accessibilityReduceMotion", "https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion"),
+            wcag("2.2.2 Pause, Stop, Hide", "pause-stop-hide")
+        ]
+    )
+
     private static func apple(_ criterion: String, _ url: String) -> StandardReference {
         StandardReference(source: "Apple", criterion: criterion, url: url)
     }

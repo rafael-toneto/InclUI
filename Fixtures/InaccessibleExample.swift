@@ -32,6 +32,12 @@ struct InaccessibleExample: View {
 
             Text("Account summary")
                 .dynamicTypeSize(.large)
+
+            Rectangle()
+                .gesture(DragGesture().onEnded { _ in })
+
+            Text("Loading")
+                .animation(.linear(duration: 1).repeatForever(), value: isOnline)
         }
     }
 }

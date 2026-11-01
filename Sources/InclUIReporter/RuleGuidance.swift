@@ -138,6 +138,38 @@ public struct RuleGuidance: Sendable {
                 verification: "Altere o Dynamic Type nas configurações do dispositivo ou do simulador até o maior tamanho. Confira se textos e controles crescem sem cortes, sobreposição ou perda de ações.",
                 caveat: "Uma restrição usada apenas em Preview ou testes pode ser intencional. Confira o uso em produção e as restrições herdadas de elementos pais."
             )
+        case "SAC010":
+            RuleGuidance(
+                title: "Arrastar sem alternativa acessível identificada",
+                problem: "Um DragGesture com alteração de estado foi associado à vista sem ação acessível equivalente reconhecida no mesmo encadeamento.",
+                impact: "Quem usa VoiceOver, Controle Assistivo ou outro método de entrada pode não conseguir concluir uma ação que exige arrastar.",
+                fix: "Ofereça a mesma operação por Button ou accessibilityAction. Para ajuste contínuo, considere accessibilityAdjustableAction; para drag and drop do sistema, use as APIs semânticas de arrastar e soltar.",
+                before: "Rectangle().gesture(DragGesture().onEnded { _ in concluir() })",
+                after: """
+                Rectangle()
+                    .gesture(DragGesture().onEnded { _ in concluir() })
+                    .accessibilityAction(named: "Concluir") { concluir() }
+                """,
+                verification: "Execute a tarefa em aparelho físico com VoiceOver e Controle Assistivo, sem realizar o gesto de arrastar. Confira que a alternativa produz o mesmo resultado.",
+                caveat: "A regra reconhece DragGesture escrito diretamente no modificador ou em uma variável local simples no mesmo bloco. Não segue propriedades ou funções que devolvem gestos nem prova que uma ação acessível existente seja equivalente. Gestos decorativos ou opções oferecidas em outro componente precisam de revisão contextual."
+            )
+        case "SAC011":
+            RuleGuidance(
+                title: "Animação repetitiva sem verificação de Reduzir Movimento",
+                problem: "Foi encontrada uma animação repeatForever aplicada sem leitura reconhecida de accessibilityReduceMotion na mesma estrutura de vista.",
+                impact: "Movimento automático e repetitivo pode distrair ou causar desconforto a pessoas sensíveis a animações.",
+                fix: "Leia @Environment(\\.accessibilityReduceMotion) e substitua ou reduza o movimento quando a preferência estiver ativa. Se necessário, ofereça também um controle de pausa.",
+                before: "withAnimation(.linear(duration: 1).repeatForever()) { pulsando = true }",
+                after: """
+                @Environment(\\.accessibilityReduceMotion) private var reduceMotion
+                // No contexto da vista:
+                if !reduceMotion {
+                    withAnimation(.linear(duration: 1).repeatForever()) { pulsando = true }
+                }
+                """,
+                verification: "Ative Reduzir Movimento no iPhone e confirme que a animação repetitiva cessa ou muda para uma apresentação confortável, sem perda de informação ou ação.",
+                caveat: "A análise não determina se o movimento é essencial, se existe um controle de pausa em outra vista ou se a preferência é tratada por outro componente. A simples leitura da preferência também não garante uso correto; confirme em execução."
+            )
         default:
             RuleGuidance(
                 title: diagnostic.title,
