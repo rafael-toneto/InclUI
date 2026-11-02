@@ -65,7 +65,11 @@ let package = Package(
                 "InclUICore",
                 "InclUIReporter"
             ],
-            path: "Sources/InclUIGUI"
+            path: "Sources/InclUIGUI",
+            resources: [
+                .copy("Resources/AppIcon.png"),
+                .copy("Resources/AppIcon.icon")
+            ]
         ),
         .plugin(
             name: "InclUIPlugin",

@@ -64,16 +64,16 @@ public struct HTMLReporter: AnalysisReporter {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <meta name="color-scheme" content="light">
-          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
+          <meta name="color-scheme" content="light dark">
+          <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src data:; script-src 'unsafe-inline'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'">
           <title>Revisão de acessibilidade · InclUI</title>
           <style>\(Self.styles)</style>
         </head>
         <body>
           <a class="skip-link" href="#main">Ir para o relatório</a>
           <header class="masthead wrap">
-            <div class="brand"><span class="brand-mark" aria-hidden="true">a11y</span><span>InclUI<span class="brand-subtitle">Relatório para desenvolvimento</span></span></div>
-            <nav aria-label="Seções do relatório"><a href="#findings">Ocorrências</a><a href="#manual">Validação manual</a><a href="#scope">Escopo</a></nav>
+            <div class="brand"><span class="brand-mark" aria-hidden="true"></span><span>InclUI<span class="brand-subtitle">Relatório para desenvolvimento</span></span></div>
+            <div class="header-actions"><nav aria-label="Seções do relatório"><a href="#findings">Ocorrências</a><a href="#manual">Validação manual</a><a href="#scope">Escopo</a></nav><div class="theme-control interactive" hidden><label for="theme">Aparência</label><select id="theme" aria-label="Aparência do relatório"><option value="system">Sistema</option><option value="light">Claro</option><option value="dark">Escuro</option></select></div></div>
           </header>
           <main id="main" class="wrap">
             <section class="hero" aria-labelledby="report-title">
@@ -213,16 +213,16 @@ public struct HTMLReporter: AnalysisReporter {
     }
 
     private static let styles = #"""
-    :root{--ink:#172e2b;--muted:#516561;--paper:#f4f6f2;--white:#fff;--line:#ccd8d2;--teal:#126653;--teal-light:#e9f3ed;--high:#923515;--high-bg:#fff0e7;--medium:#755505;--medium-bg:#fff6d9;--low:#345d7a;--low-bg:#edf4fb;--radius:16px;--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
+    :root{color-scheme:light;--ink:#202124;--muted:#555b62;--paper:#f7f7f6;--white:#fff;--line:#d8dadd;--brand:#b54814;--brand-hover:#92340b;--brand-soft:#fff0e8;--button-ink:#fff;--high:#a5233e;--high-bg:#fcebf0;--medium:#805000;--medium-bg:#fff3d7;--low:#235b87;--low-bg:#eaf3fa;--subtle:#f1f2f2;--code:#fafafa;--after:#eef5ef;--after-line:#bad5c1;--after-ink:#28643a;--focus:#275fbb;--radius:14px;--mono:ui-monospace,SFMono-Regular,Consolas,"Liberation Mono",monospace}
     
     *{box-sizing:border-box}
     html{scroll-behavior:smooth;scroll-padding-top:24px}
     body{margin:0;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:16px;line-height:1.65}
-    a{color:var(--teal);text-underline-offset:4px}
+    a{color:var(--brand);text-underline-offset:4px}
     button,input,select,textarea{font:inherit}
     button,a,input,select,summary{touch-action:manipulation}
     button{cursor:pointer}
-    a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #1769aa;outline-offset:4px}
+    a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--focus);outline-offset:4px}
     h1,h2,h3,h4,p{margin-top:0}
     h1,h2,h3,h4{line-height:1.2}
     h2{font-size:28px;letter-spacing:-.6px;margin-bottom:12px}
@@ -231,29 +231,29 @@ public struct HTMLReporter: AnalysisReporter {
     p{margin-bottom:14px}
     pre,code{font-family:var(--mono)}
     code{font-size:.88em}
-    pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;tab-size:4}
+    pre{margin:0;white-space:pre;overflow:auto;max-width:100%;tab-size:4}
     pre code{font-size:13px;line-height:1.75}
     button[hidden],[hidden]{display:none!important}
     .wrap{width:min(1184px,calc(100% - 80px));margin-inline:auto}
     .masthead{display:flex;align-items:center;justify-content:space-between;gap:24px;padding-block:30px;border-bottom:1px solid var(--line)}
     .brand{display:flex;align-items:center;gap:13px;font-weight:700;font-size:14px;line-height:1.4}
-    .brand-mark{display:grid;place-items:center;width:46px;height:46px;border-radius:13px;background:var(--ink);color:#e3f3c2;font-family:var(--mono);font-size:15px;letter-spacing:-1px}
+    .brand-mark{display:block;flex:none;width:32px;height:32px;background:url("\#(ReportBrandIcon.dataURI)") center / contain no-repeat}
     .brand-subtitle{display:block;font-size:12px;font-weight:400;color:var(--muted);margin-top:3px}
-    .masthead nav{display:flex;gap:26px;font-size:13px;font-weight:600}
+    .header-actions{display:flex;align-items:center;gap:26px;flex-wrap:wrap}.theme-control{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}.theme-control select{background:var(--white);border:1px solid var(--line);border-radius:7px;color:var(--ink);padding:6px 8px;max-width:110px}.masthead nav{display:flex;gap:26px;font-size:13px;font-weight:600}
     .masthead nav a{text-decoration:none}
     .hero{display:grid;grid-template-columns:1.25fr 1fr;gap:72px;padding-block:54px 38px;align-items:center}
     .eyebrow{text-transform:uppercase;letter-spacing:1.55px;font-size:11px;font-weight:750;color:var(--muted);margin-bottom:18px}
-    .hero h1{font-size:clamp(38px,4.6vw,60px);font-weight:750;letter-spacing:-2.7px;line-height:1.03;margin-bottom:24px}
-    .accent{color:var(--teal)}
+    .hero h1{font-size:clamp(36px,4vw,52px);font-weight:750;letter-spacing:-2.7px;line-height:1.03;margin-bottom:24px}
+    .accent{color:var(--brand)}
     .hero-description{max-width:490px;color:var(--muted);font-size:16px;margin-bottom:0}
-    .summary-panel{border-left:3px solid var(--teal);padding:5px 0 5px 26px}
+    .summary-panel{border-left:3px solid var(--brand);padding:5px 0 5px 26px}
     .summary-panel .eyebrow{display:block;margin-bottom:14px}
     .summary-panel h2{font-size:30px;max-width:400px}
     .summary-panel>p{color:var(--muted);font-size:14px}
     .summary-panel .timestamp{font-family:var(--mono);font-size:10px;margin:24px 0 0;color:var(--muted)}
     .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
     .stat{background:var(--white);padding:19px 22px;border:1px solid var(--line);border-radius:12px;position:relative}
-    .stat:before{content:"";position:absolute;top:22px;right:21px;width:8px;height:8px;border-radius:50%;background:var(--teal)}
+    .stat:before{content:"";position:absolute;top:22px;right:21px;width:8px;height:8px;border-radius:50%;background:var(--brand)}
     .stat.high:before{background:var(--high)}
     .stat.medium:before{background:var(--medium)}
     .stat.low:before{background:var(--low)}
@@ -262,22 +262,22 @@ public struct HTMLReporter: AnalysisReporter {
     .stat strong{display:block;font-size:39px;line-height:1.5;letter-spacing:-1.5px;font-weight:650}
     .scope-note{font-size:13px;color:var(--muted);margin:22px 0 50px;max-width:1060px}
     .scope-note strong{color:var(--ink)}
-    .coverage-alert{border:1px solid #c07946;border-left:5px solid var(--high);background:var(--high-bg);border-radius:12px;padding:23px;margin-top:24px}
+    .coverage-alert{border:1px solid var(--medium);border-left:5px solid var(--high);background:var(--high-bg);border-radius:12px;padding:23px;margin-top:24px}
     .coverage-alert h2{font-size:20px}
     .coverage-alert li{overflow-wrap:anywhere;margin-bottom:12px}
     .section-heading{display:flex;align-items:center;justify-content:space-between;gap:20px;margin-bottom:22px}
     .section-heading .eyebrow{margin-bottom:10px}
     .section-heading h2{margin-bottom:0}
     .count{display:inline-block;vertical-align:middle;border:1px solid var(--line);border-radius:100px;min-width:34px;padding:5px 9px;margin-left:8px;font-size:14px;font-weight:600;letter-spacing:0;text-align:center}
-    .button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border:1px solid var(--teal);border-radius:7px;background:var(--teal);color:#fff;padding:9px 14px;font-size:12px;font-weight:650;line-height:1.4;text-decoration:none}
-    .button:hover{background:#0c4d3e}
-    .button.secondary{background:var(--white);border-color:#b9ccc2;color:var(--ink)}
-    .button.secondary:hover{background:var(--teal-light)}
-    .filters{display:grid;grid-template-columns:1.65fr .7fr 1fr 1fr auto;gap:12px;align-items:end;background:#e9eeE9;padding:18px;border:1px solid var(--line);border-radius:12px}
+    .button{display:inline-flex;align-items:center;justify-content:center;min-height:42px;border:1px solid var(--brand);border-radius:7px;background:var(--brand);color:var(--button-ink);padding:9px 14px;font-size:12px;font-weight:650;line-height:1.4;text-decoration:none}
+    .button:hover{background:var(--brand-hover)}
+    .button.secondary{background:var(--white);border-color:var(--line);color:var(--ink)}
+    .button.secondary:hover{background:var(--brand-soft)}
+    .filters{display:grid;grid-template-columns:1.65fr .7fr 1fr 1fr auto;gap:12px;align-items:end;background:var(--subtle);padding:18px;border:1px solid var(--line);border-radius:12px}
     .filters>div{min-width:0}
     .filters label{display:block;font-size:11px;font-weight:700;margin-bottom:7px}
-    .filters input,.filters select{width:100%;height:42px;border:1px solid #a8bab0;border-radius:6px;background:#fff;padding:8px 10px;font-size:12px;color:var(--ink)}
-    .filters input::placeholder{color:#60706a}
+    .filters input,.filters select{width:100%;height:42px;border:1px solid var(--line);border-radius:6px;background:var(--white);padding:8px 10px;font-size:12px;color:var(--ink)}
+    .filters input::placeholder{color:var(--muted)}
     .result-count{font-size:12px;color:var(--muted);margin:14px 0 18px}
     .findings-list{display:grid;gap:24px}
     .finding{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:28px 30px;scroll-margin-top:20px}
@@ -292,17 +292,17 @@ public struct HTMLReporter: AnalysisReporter {
     .permalink{font-family:var(--mono);padding:4px 10px;text-decoration:none;font-size:17px}
     .finding h3{margin-bottom:12px}
     .finding-problem{color:var(--muted);font-size:14px;max-width:940px}
-    .location{position:relative;margin:20px 0 16px;background:var(--paper);border-left:3px solid #9bb3a4;padding:14px 17px}
+    .location{position:relative;margin:20px 0 16px;background:var(--paper);border-left:3px solid var(--line);padding:14px 17px}
     .location .eyebrow{font-size:9px;letter-spacing:1.2px}
     .location p{margin:4px 0 0;overflow-wrap:anywhere}
     .location code{font-size:12px}
     .line-number{font-size:11px;color:var(--muted);margin-left:14px;display:inline-block}
     .location .full-location{margin-top:6px;color:var(--muted)}
     .full-location code{font-size:10px}
-    .text-button{display:inline-block;min-height:32px;border:0;padding:2px 0;margin-top:6px;background:transparent;color:var(--teal);text-decoration:underline;text-underline-offset:3px;font-size:11px;font-weight:650}
+    .text-button{display:inline-block;min-height:32px;border:0;padding:2px 0;margin-top:6px;background:transparent;color:var(--brand);text-decoration:underline;text-underline-offset:3px;font-size:11px;font-weight:650}
     .source-block{border:1px solid var(--line);border-radius:8px;overflow:hidden}
-    .source-block .code-label{background:#f0f4f0;border-bottom:1px solid var(--line);margin:0;padding:8px 15px}
-    .source-block pre{padding:15px 17px;background:#fbfcfa}
+    .source-block .code-label{background:var(--subtle);border-bottom:1px solid var(--line);margin:0;padding:8px 15px}
+    .source-block pre{padding:15px 17px;background:var(--code)}
     .code-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;font-weight:700;color:var(--muted);margin-bottom:11px}
     .guidance-grid{display:grid;grid-template-columns:1fr 1fr;gap:36px;margin:25px 0}
     .guidance-grid p{font-size:13px;color:var(--muted);margin-bottom:0}
@@ -310,11 +310,11 @@ public struct HTMLReporter: AnalysisReporter {
     .example-heading h4{margin-bottom:0}
     .example-heading span{font-size:10px;color:var(--muted)}
     .examples{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .examples>div{min-width:0;border-radius:8px;border:1px solid var(--line);background:#f5f6f3;padding:15px 17px}
-    .examples>.after{background:#ecf5ee;border-color:#b7d0bf}
-    .after .code-label{color:#226444}
+    .examples>div{min-width:0;border-radius:8px;border:1px solid var(--line);background:var(--subtle);padding:15px 17px}
+    .examples>.after{background:var(--after);border-color:var(--after-line)}
+    .after .code-label{color:var(--after-ink)}
     .examples pre code{font-size:12px}
-    .verification{margin-top:21px;padding:17px 20px;border-left:3px solid var(--teal);background:#f3f8f4}
+    .verification{margin-top:21px;padding:17px 20px;border-left:3px solid var(--brand);background:var(--brand-soft)}
     .verification h4{font-size:13px}
     .verification p{font-size:13px;color:var(--muted);margin:0}
     .context-note{font-size:12px;color:var(--muted);margin:17px 0}
@@ -326,16 +326,16 @@ public struct HTMLReporter: AnalysisReporter {
     .references li{margin-block:6px}
     .finding-actions{display:flex;align-items:center;gap:14px;margin-top:21px}
     .finding-actions>span{font-size:11px;color:var(--muted)}
-    .empty-state{border:1px dashed #9fb4a8;border-radius:var(--radius);background:#f9fbf7;padding:38px;max-width:100%}
+    .empty-state{border:1px dashed var(--line);border-radius:var(--radius);background:var(--subtle);padding:38px;max-width:100%}
     .empty-state p{max-width:750px;color:var(--muted)}
     .empty-state h3{font-size:24px}
     .empty-state a{font-size:14px;font-weight:650}
-    .manual-section{margin-top:66px;padding:36px;border:1px solid #b7ccc0;border-radius:var(--radius);background:#eaf1e9}
+    .manual-section{margin-top:66px;padding:36px;border:1px solid var(--line);border-radius:var(--radius);background:var(--subtle)}
     .section-intro{max-width:800px;color:var(--muted);font-size:14px}
     .checklist{padding:0;margin:26px 0 0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:0 30px}
-    .checklist li{border-top:1px solid #c4d3c7;padding:16px 0;font-size:13px}
+    .checklist li{border-top:1px solid var(--line);padding:16px 0;font-size:13px}
     .checklist label{display:flex;align-items:flex-start;gap:12px;cursor:pointer}
-    .checklist input{flex-shrink:0;width:18px;height:18px;margin:2px 0 0;accent-color:var(--teal)}
+    .checklist input{flex-shrink:0;width:18px;height:18px;margin:2px 0 0;accent-color:var(--brand)}
     .small-note{font-size:11px;color:var(--muted);margin:14px 0 0}
     .scope-section{margin-top:55px}
     .scope-grid{display:grid;grid-template-columns:1fr 1fr;gap:42px;margin-top:28px}
@@ -347,21 +347,21 @@ public struct HTMLReporter: AnalysisReporter {
     .file-inventory summary{min-height:34px;cursor:pointer;font-weight:650}
     .file-inventory ul{margin-top:12px}
     .footer{display:flex;justify-content:space-between;gap:24px;color:var(--muted);border-top:1px solid var(--line);padding-block:25px;margin-top:42px;font-size:10px}
-    .copy-feedback:not(:empty){position:fixed;bottom:24px;left:50%;transform:translateX(-50%);max-width:calc(100% - 40px);padding:12px 20px;border-radius:8px;background:var(--ink);color:#fff;font-size:13px;box-shadow:0 4px 20px #172e2b33;z-index:3}
+    .copy-feedback:not(:empty){position:fixed;bottom:24px;left:50%;transform:translateX(-50%);max-width:calc(100% - 40px);padding:12px 20px;border-radius:8px;background:var(--ink);color:var(--paper);font-size:13px;box-shadow:0 4px 20px #00000020;z-index:3}
     .skip-link{position:absolute;left:20px;top:-100px;padding:12px;background:var(--white);z-index:10}
     .skip-link:focus{top:12px}
     .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    dialog{border:1px solid var(--line);border-radius:14px;padding:28px;max-width:660px;width:calc(100% - 32px);color:var(--ink);background:white}
-    dialog::backdrop{background:#172e2b88}
+    dialog{border:1px solid var(--line);border-radius:14px;padding:28px;max-width:660px;width:calc(100% - 32px);color:var(--ink);background:var(--white)}
+    dialog::backdrop{background:#00000088}
     dialog h2{font-size:22px}
     dialog p{font-size:14px;color:var(--muted)}
-    dialog textarea{width:100%;margin-bottom:18px;padding:12px;border:1px solid #91a799;border-radius:6px;font-family:var(--mono);font-size:12px}
+    dialog textarea{width:100%;margin-bottom:18px;padding:12px;border:1px solid var(--line);border-radius:6px;font-family:var(--mono);font-size:12px}
     
-    .source-current{background:#e0ecd6;color:#173b24;font-weight:650}
+    .source-current{background:var(--brand-soft);color:var(--ink);font-weight:650}
     
     @media(max-width:980px){.wrap{width:calc(100% - 48px)}
     .hero{gap:34px}
-    .hero h1{font-size:47px}
+    .hero h1{font-size:43px}
     .summary-panel h2{font-size:25px}
     .filters{grid-template-columns:1.5fr 1fr 1fr}
     .filters .search-field{grid-column:span 2}
@@ -376,7 +376,7 @@ public struct HTMLReporter: AnalysisReporter {
     .masthead{display:block;padding-block:20px}
     .masthead nav{margin-top:22px;gap:21px;flex-wrap:wrap}
     .hero{grid-template-columns:1fr;gap:28px;padding-block:35px 27px}
-    .hero h1{font-size:45px}
+    .hero h1{font-size:40px}
     .hero-description{font-size:14px}
     .summary-panel{padding-left:18px}
     .summary-panel h2{max-width:none;font-size:25px}
@@ -412,7 +412,7 @@ public struct HTMLReporter: AnalysisReporter {
     }
     
     @media print{@page{margin:15mm}
-    body{font-size:10pt;background:#fff;color:#000}
+    body{font-size:10pt;background:var(--white);color:#000}
     .wrap{width:100%}
     .masthead{padding-top:0;padding-bottom:15px}
     .masthead nav,.interactive,.skip-link,.permalink,.copy-feedback,dialog,noscript,#no-matches{display:none!important}
@@ -424,7 +424,7 @@ public struct HTMLReporter: AnalysisReporter {
     .stat{padding:12px}
     .stat strong{font-size:25pt}
     .scope-note{margin-bottom:25px}
-    .finding{break-inside:auto;margin-bottom:20px;border-color:#a5b5aa;padding:18px}
+    .finding{break-inside:auto;margin-bottom:20px;border-color:var(--line);padding:18px}
     .finding[hidden]{display:block!important}
     .finding h3,.finding-top,.location,.guidance-grid,.source-block,.examples,.verification,.context-note{break-inside:avoid}
     .finding h3{font-size:17pt}
@@ -442,15 +442,40 @@ public struct HTMLReporter: AnalysisReporter {
     pre code,.examples pre code{font-size:8pt}
     .examples{gap:10px}
     .section-heading{break-after:avoid}
-    .file-inventory[open] .path-list{display:block}
+    .file-inventory .path-list,.file-inventory>*{display:block!important}
     .badge,.after,.verification,.stat{-webkit-print-color-adjust:exact;print-color-adjust:exact}
     }
     
+
+    @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--ink:#eceef0;--muted:#b8bec5;--paper:#191b1e;--white:#25282c;--line:#454a50;--brand:#ffad78;--brand-hover:#ffbe95;--brand-soft:#382a24;--high:#ff9ab0;--high-bg:#3b252e;--medium:#f4ca7b;--medium-bg:#3a3023;--low:#9acbf2;--low-bg:#253442;--subtle:#202328;--code:#1c1f22;--after:#26352b;--after-line:#456b51;--after-ink:#b0e4b8;--focus:#8db4ff}}
+    :root[data-theme="dark"]{color-scheme:dark;--ink:#eceef0;--muted:#b8bec5;--paper:#191b1e;--white:#25282c;--line:#454a50;--brand:#ffad78;--brand-hover:#ffbe95;--brand-soft:#382a24;--high:#ff9ab0;--high-bg:#3b252e;--medium:#f4ca7b;--medium-bg:#3a3023;--low:#9acbf2;--low-bg:#253442;--subtle:#202328;--code:#1c1f22;--after:#26352b;--after-line:#456b51;--after-ink:#b0e4b8;--focus:#8db4ff}
+    @media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--button-ink:#20160f}}
+    :root[data-theme="dark"]{--button-ink:#20160f}
+    .finding,.stat,.filters,.examples>div,.source-block,.manual-section,.empty-state{min-width:0}
+    .finding-tags{flex-wrap:wrap}
+    .location code,.path-list code,.coverage-alert code{overflow-wrap:anywhere}
+    .filters select{min-width:0;text-overflow:ellipsis}
+    @media(max-width:650px){.header-actions{gap:12px}.masthead nav{margin-top:0}.theme-control{margin-top:14px}.finding-top{align-items:flex-start}.finding-number{padding-left:8px}}
+
+    @media print{:root,:root[data-theme="dark"]{color-scheme:light;--ink:#111;--muted:#333;--paper:#fff;--white:#fff;--line:#aaa;--brand:#8b390e;--brand-soft:#fff;--high:#7a1630;--high-bg:#fff;--medium:#614000;--medium-bg:#fff;--low:#204c70;--low-bg:#fff;--subtle:#fff;--code:#fff;--after:#fff;--after-line:#aaa;--after-ink:#111}body{background:#fff!important;color:#111!important}.finding[hidden]{display:block!important}.source-block pre,.examples pre{white-space:pre-wrap;overflow-wrap:anywhere}.theme-control{display:none!important}}
     """#
 
     private static let script = #"""
     (() => {
       'use strict';
+      const theme = document.getElementById('theme');
+      const applyTheme = value => {
+        if (value === 'light' || value === 'dark') document.documentElement.dataset.theme = value;
+        else delete document.documentElement.dataset.theme;
+        theme.value = value;
+      };
+      let savedTheme = 'system';
+      try { savedTheme = localStorage.getItem('inclui-report-theme') || 'system'; } catch (_) {}
+      applyTheme(['system', 'light', 'dark'].includes(savedTheme) ? savedTheme : 'system');
+      theme.addEventListener('change', () => {
+        applyTheme(theme.value);
+        try { localStorage.setItem('inclui-report-theme', theme.value); } catch (_) {}
+      });
       const cards = Array.from(document.querySelectorAll('.finding'));
       const search = document.getElementById('search');
       const severity = document.getElementById('severity-filter');
@@ -530,7 +555,7 @@ public struct HTMLReporter: AnalysisReporter {
       // Print the full report even when filters are active, then restore the view.
       let printDetails = [];
       window.addEventListener('beforeprint', () => {
-        printDetails = Array.from(document.querySelectorAll('.references')).map(item => [item, item.open]);
+        printDetails = Array.from(document.querySelectorAll('.references, .file-inventory')).map(item => [item, item.open]);
         printDetails.forEach(([item]) => { item.open = true; });
       });
       window.addEventListener('afterprint', () => {

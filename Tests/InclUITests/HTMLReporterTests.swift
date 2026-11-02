@@ -138,6 +138,23 @@ struct HTMLReporterTests {
         }
     }
 
+    @Test("Provides system, light and dark themes without external assets")
+    func supportsOfflineAppearanceChoices() {
+        let output = HTMLReporter().render(result([], files: ["/project/View.swift"]))
+        #expect(output.contains("prefers-color-scheme:dark"))
+        #expect(output.contains("value=\"system\""))
+        #expect(output.contains("value=\"light\""))
+        #expect(output.contains("value=\"dark\""))
+        #expect(output.contains("localStorage.setItem('inclui-report-theme'"))
+        #expect(output.contains("catch (_) {}"))
+        #expect(output.contains("color-scheme:light"))
+        #expect(output.contains("color-scheme:dark"))
+        #expect(output.contains("data:image/png;base64,"))
+        #expect(output.contains("img-src data:"))
+        #expect(!output.contains("<script src="))
+        #expect(!output.contains("<link rel=\"stylesheet\""))
+    }
+
     @Test("Unknown rules keep their guidance and do not produce empty example panels")
     func handlesUnknownRules() {
         let rule = AccessibilityRuleDefinition(

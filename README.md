@@ -1,7 +1,7 @@
 # InclUI
 
 Ferramenta de análise estática para antecipar riscos de acessibilidade em código SwiftUI.
-O checker percorre a árvore sintática com SwiftSyntax, aplica nove regras e gera warnings
+O checker percorre a árvore sintática com SwiftSyntax, aplica onze regras e gera warnings
 clicáveis no Xcode e relatórios em português para orientar a revisão do time. O HTML
 mostra o que ajustar, onde fica o trecho e como testar a correção. Os diagnósticos são indícios para
 revisão: não certificam conformidade nem substituem Accessibility Inspector, testes com
@@ -24,6 +24,8 @@ com verificações objetivas que podem ser feitas no código-fonte.
 | `SAC007` | Hidden Interactive Control | controle SwiftUI padrão, diretamente ou em um contêiner, sob `.accessibilityHidden(true)` | [Apple `accessibilityHidden`](https://developer.apple.com/documentation/swiftui/view/accessibilityhidden(_:)), [WCAG 2.2 - 4.1.2](https://www.w3.org/TR/WCAG22/#name-role-value) |
 | `SAC008` | Gesture Only Interaction | `onTapGesture` ou `onLongPressGesture` sem papel/ação acessível equivalente | [Apple - Accessible controls](https://developer.apple.com/documentation/swiftui/accessible-controls), [WCAG 2.2 - 2.1.1 e 4.1.2](https://www.w3.org/TR/WCAG22/) |
 | `SAC009` | Restricted Dynamic Type | `dynamicTypeSize` fixo ou faixa que impede chegar ao maior tamanho de acessibilidade | [Apple `dynamicTypeSize`](https://developer.apple.com/documentation/swiftui/view/dynamictypesize(_:)-26aj0), [Apple HIG - Typography](https://developer.apple.com/design/human-interface-guidelines/typography), [WCAG 2.2 - 1.4.4](https://www.w3.org/TR/WCAG22/#resize-text) |
+| `SAC010` | Custom Drag Gesture | `DragGesture` com mudança de estado ligado a uma view, diretamente ou por variável local, sem ação acessível na mesma expressão | [Apple - Accessible controls](https://developer.apple.com/documentation/swiftui/accessible-controls), [Apple - Gestures](https://developer.apple.com/documentation/swiftui/gestures) |
+| `SAC011` | Repeating Motion | animação `.repeatForever` aplicada em uma view cujo tipo não lê `accessibilityReduceMotion` | [Apple HIG - Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility), [Apple `accessibilityReduceMotion`](https://developer.apple.com/documentation/swiftui/environmentvalues/accessibilityreducemotion) |
 
 `SAC004` usa 44 x 44 pt como limiar de revisão por ser o tamanho padrão recomendado
 pela Apple no iOS/iPadOS e o alvo do critério WCAG 2.2 2.5.5 (nível AAA). Não é tratado
@@ -37,6 +39,19 @@ iconográfico que também varie, ou a mudança do próprio símbolo. Uma descri�
 ícone constante não suprime o warning. A semântica visual completa depende da interface
 renderizada e precisa de revisão humana.
 
+`SAC010` prioriza um risco de tarefa: uma ação que depende de arrastar. Ela procura
+`DragGesture` com `onChanged`, `onEnded` ou `updating` ligado por `gesture`,
+`highPriorityGesture` ou `simultaneousGesture`. Também resolve uma variável local simples
+no mesmo bloco. O aviso é suprimido quando a mesma expressão expõe uma ação ou
+representação acessível, ou usa arrastar nativo. A regra não prova que inexista um
+controle equivalente em outra parte da tela; isso precisa ser verificado em execução.
+
+`SAC011` procura animação repetida com `.repeatForever` e ausência da leitura de
+`accessibilityReduceMotion` na `struct` que contém o trecho. A preferência pode ser
+tratada em outro componente e uma leitura isolada pode não desativar o movimento.
+Portanto, o resultado pede inspeção visual com Reduce Motion ligado e desligado; não
+deve ser apresentado automaticamente como violação de WCAG.
+
 ## Requisitos
 
 - Swift 6.2
@@ -47,7 +62,8 @@ O package usa SwiftSyntax 602.0.0, correspondente à linha da toolchain Swift 6.
 ## Janela para executar a análise
 
 No Finder, abra `scripts/AbrirInclUI.command` uma vez. O lançador compila a interface,
-cria `~/Applications/InclUI.app` fora deste repositório e abre a
+cria `~/Applications/InclUI.app` fora deste repositório, instala o ícone oficial
+e o bundle de recursos, assina localmente o app e abre a
 janela. Nas próximas vezes, abra o app diretamente pelo Finder. Se atualizar o código,
 execute o lançador novamente para atualizar o app instalado. Também é possível iniciar
 a interface pelo terminal, dentro da pasta deste package:
@@ -56,13 +72,43 @@ a interface pelo terminal, dentro da pasta deste package:
 swift run inclui-gui
 ```
 
-Escolha a pasta dos fontes do app, clique em **Gerar relatórios** e o HTML abrirá no
-navegador. A janela mostra quantos arquivos foram analisados, quantos avisos foram
-gerados e se houve problemas de leitura. Ela lembra as pastas escolhidas recentemente.
+Escolha a pasta dos fontes do app, confira o destino, clique em **Gerar relatórios**
+e o HTML abrirá no navegador. A janela mostra a origem do resultado, arquivos
+analisados, avisos por prioridade e eventuais problemas de leitura. Uma análise
+incompleta é identificada separadamente de uma execução sem avisos. Durante a
+execução, a seleção fica bloqueada e um indicador mostra atividade sem estimar
+progresso. A janela lembra as pastas escolhidas recentemente.
 Os relatórios são salvos por padrão em `~/Documents/InclUI-Relatorios`,
 em uma pasta nova para cada execução; o destino pode ser alterado na janela. Ao analisar
 um projeto externo, escolha a pasta do app para não incluir testes ou outros targets.
 Os avisos indicam trechos para revisão; a análise não confirma barreiras na interface.
+
+### Identidade visual
+
+O PNG oficial do passarinho com a lupa está em
+`Sources/InclUIGUI/Resources/AppIcon.png`. O lançador gera o `.icns` a partir
+deste arquivo, sem acrescentar máscaras. Uma versão de 64 px está incorporada
+no HTML por `ReportBrandIcon.swift`, mantendo cada relatório independente.
+O projeto editável do Icon Composer está em
+`Sources/InclUIGUI/Resources/AppIcon.icon` e faz parte dos recursos do target
+`inclui-gui` no `Package.swift`; ele aparece ao abrir o package no Xcode.
+O package não possui um target de aplicativo Xcode versionado: o ícone do
+`InclUI.app` instalado é o `.icns` gerado pelo lançador, compatível com macOS 13.
+A GUI acompanha o modo claro ou escuro
+do macOS e usa o laranja do personagem somente em ações e pequenos detalhes.
+O HTML acompanha a aparência do sistema por padrão e oferece um seletor
+**Sistema / Claro / Escuro**. A escolha é mantida localmente quando o navegador
+permite armazenamento; o relatório continua legível sem ele e sem JavaScript.
+
+| Decisão | SwiftUI (`InclUIStyle`) | CSS do relatório |
+| --- | --- | --- |
+| Fundo e superfície | `background`, `surface` | `--paper`, `--white` |
+| Texto e separadores | cores de sistema, `line` | `--ink`, `--muted`, `--line` |
+| Marca e interação | `accentLight`, `accentDark` | `--brand`, `--brand-soft` |
+| Cantos e espaçamento | `radius`, `spacing` | `--radius` e escala de espaçamento das seções |
+
+As cores de prioridade do HTML são semânticas e independentes do laranja da
+marca; todos os avisos também exibem o rótulo textual da prioridade.
 
 ## Comece pelo relatório
 
@@ -224,7 +270,7 @@ de host e sua dependência de SwiftSyntax; as execuções seguintes reutilizam e
   inspeção da interface renderizada e ficam fora deste núcleo estático.
 - Metadados e dimensões dinâmicos são ignorados quando o valor não pode ser comprovado
   sintaticamente.
-- Alguns warnings, sobretudo `SAC004`, `SAC005`, `SAC008` e `SAC009`, dependem do
+- Alguns warnings, sobretudo `SAC004`, `SAC005`, `SAC008`, `SAC009`, `SAC010` e `SAC011`, dependem do
   contexto e devem ser avaliados como alertas de revisão.
 
 ## Uso por outro Swift Package
