@@ -8,11 +8,34 @@ swift build --product inclui-gui
 bin_dir="$(swift build --show-bin-path)"
 binary="$bin_dir/inclui-gui"
 resource_bundle="$bin_dir/InclUI_inclui-gui.bundle"
-icon_source="$repo/Sources/InclUIGUI/Resources/AppIcon.png"
+icon_source="$repo/Sources/InclUIGUI/Resources/AppIcon.icon"
 app="$HOME/Applications/InclUI.app"
 
-if [[ ! -f "$binary" || ! -d "$resource_bundle" || ! -f "$icon_source" ]]; then
+if [[ ! -f "$binary" || ! -d "$resource_bundle" || ! -f "$icon_source/icon.json" ]]; then
     echo 'O build não produziu o executável ou os recursos necessários.' >&2
+    exit 1
+fi
+
+developer_dir="${DEVELOPER_DIR:-$(xcode-select -p)}"
+if [[ ! -x "$developer_dir/usr/bin/actool" ]]; then
+    developer_dir="/Applications/Xcode.app/Contents/Developer"
+fi
+if [[ ! -x "$developer_dir/usr/bin/actool" ]]; then
+    echo 'Instale o Xcode para compilar o ícone dinâmico do InclUI.' >&2
+    exit 1
+fi
+
+icon_work="$(mktemp -d)"
+trap 'rm -rf "$icon_work"' EXIT
+DEVELOPER_DIR="$developer_dir" xcrun actool \
+    --compile "$icon_work" \
+    --platform macosx \
+    --minimum-deployment-target 13.0 \
+    --app-icon AppIcon \
+    --output-partial-info-plist "$icon_work/partial.plist" \
+    "$icon_source"
+if [[ ! -s "$icon_work/Assets.car" || ! -s "$icon_work/AppIcon.icns" ]]; then
+    echo 'O Xcode não gerou os recursos do ícone do InclUI.' >&2
     exit 1
 fi
 
@@ -20,25 +43,7 @@ mkdir -p "$app/Contents/MacOS" "$app/Contents/Resources"
 cp "$binary" "$app/Contents/MacOS/InclUI"
 rm -rf "$app/Contents/Resources/InclUI_inclui-gui.bundle"
 cp -R "$resource_bundle" "$app/Contents/Resources/"
-
-icon_work="$(mktemp -d)"
-trap 'rm -rf "$icon_work"' EXIT
-iconset="$icon_work/AppIcon.iconset"
-mkdir -p "$iconset"
-for size in 16 32 64 128 256 512 1024; do
-    sips -s format png -z "$size" "$size" "$icon_source" --out "$icon_work/$size.png" >/dev/null
- done
-cp "$icon_work/16.png" "$iconset/icon_16x16.png"
-cp "$icon_work/32.png" "$iconset/icon_16x16@2x.png"
-cp "$icon_work/32.png" "$iconset/icon_32x32.png"
-cp "$icon_work/64.png" "$iconset/icon_32x32@2x.png"
-cp "$icon_work/128.png" "$iconset/icon_128x128.png"
-cp "$icon_work/256.png" "$iconset/icon_128x128@2x.png"
-cp "$icon_work/256.png" "$iconset/icon_256x256.png"
-cp "$icon_work/512.png" "$iconset/icon_256x256@2x.png"
-cp "$icon_work/512.png" "$iconset/icon_512x512.png"
-cp "$icon_work/1024.png" "$iconset/icon_512x512@2x.png"
-iconutil -c icns "$iconset" -o "$app/Contents/Resources/AppIcon.icns"
+cp "$icon_work/Assets.car" "$icon_work/AppIcon.icns" "$app/Contents/Resources/"
 
 cat > "$app/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -49,6 +54,7 @@ cat > "$app/Contents/Info.plist" <<'PLIST'
     <key>CFBundleDisplayName</key><string>InclUI</string>
     <key>CFBundleExecutable</key><string>InclUI</string>
     <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>CFBundleIconName</key><string>AppIcon</string>
     <key>CFBundleIdentifier</key><string>com.rafaeltoneto.InclUI</string>
     <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
     <key>CFBundleName</key><string>InclUI</string>
@@ -63,4 +69,6 @@ cat > "$app/Contents/Info.plist" <<'PLIST'
 PLIST
 
 codesign --force --deep --sign - "$app"
-open "$app"
+if [[ "${INCLUI_SKIP_OPEN:-0}" != 1 ]]; then
+    open "$app"
+fi

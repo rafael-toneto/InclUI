@@ -9,10 +9,11 @@ struct InclUIGUIApp: App {
     @StateObject private var model = CheckerViewModel()
 
     init() {
-        if let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
-           let icon = NSImage(contentsOf: url) {
-            NSApplication.shared.applicationIconImage = icon
-        }
+        // A execução direta pelo SwiftPM não tem o Assets.car do bundle do app.
+        guard Bundle.main.object(forInfoDictionaryKey: "CFBundleIconName") == nil,
+              let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
+              let icon = NSImage(contentsOf: url) else { return }
+        NSApplication.shared.applicationIconImage = icon
     }
 
     var body: some Scene {

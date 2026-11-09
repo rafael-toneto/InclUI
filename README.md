@@ -62,8 +62,8 @@ O package usa SwiftSyntax 602.0.0, correspondente à linha da toolchain Swift 6.
 ## Janela para executar a análise
 
 No Finder, abra `scripts/AbrirInclUI.command` uma vez. O lançador compila a interface,
-cria `~/Applications/InclUI.app` fora deste repositório, instala o ícone oficial
-e o bundle de recursos, assina localmente o app e abre a
+cria `~/Applications/InclUI.app` fora deste repositório, compila o ícone oficial com o Xcode,
+instala o bundle de recursos, assina localmente o app e abre a
 janela. Nas próximas vezes, abra o app diretamente pelo Finder. Se atualizar o código,
 execute o lançador novamente para atualizar o app instalado. Também é possível iniciar
 a interface pelo terminal, dentro da pasta deste package:
@@ -86,14 +86,16 @@ Os avisos indicam trechos para revisão; a análise não confirma barreiras na i
 ### Identidade visual
 
 O PNG oficial do passarinho com a lupa está em
-`Sources/InclUIGUI/Resources/AppIcon.png`. O lançador gera o `.icns` a partir
-deste arquivo, sem acrescentar máscaras. Uma versão de 64 px está incorporada
+`Sources/InclUIGUI/Resources/AppIcon.png`. Uma versão de 64 px está incorporada
 no HTML por `ReportBrandIcon.swift`, mantendo cada relatório independente.
 O projeto editável do Icon Composer está em
 `Sources/InclUIGUI/Resources/AppIcon.icon` e faz parte dos recursos do target
 `inclui-gui` no `Package.swift`; ele aparece ao abrir o package no Xcode.
-O package não possui um target de aplicativo Xcode versionado: o ícone do
-`InclUI.app` instalado é o `.icns` gerado pelo lançador, compatível com macOS 13.
+O package não possui um target de aplicativo Xcode versionado: o lançador usa o
+`actool` do Xcode para instalar o `Assets.car` com as aparências clara, escura e
+tingida. O `.icns` gerado pelo Xcode atende às versões anteriores do macOS.
+A execução direta com `swift run inclui-gui` usa o PNG como ícone estático,
+pois não cria um bundle de aplicativo.
 A GUI acompanha o modo claro ou escuro
 do macOS e usa o laranja do personagem somente em ações e pequenos detalhes.
 O HTML acompanha a aparência do sistema por padrão e oferece um seletor
