@@ -1,0 +1,47 @@
+name: Publicar executáveis macOS
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Compilar e empacotar
+        run: |
+          swift --version
+          test "$(uname -m)" = arm64
+          distribution="$RUNNER_TEMP/InclUI"
+          mkdir -p "$distribution"
+
+          swift build --configuration release --product inclui
+          bin_dir="$(swift build --configuration release --show-bin-path)"
+          cp "$bin_dir/inclui" "$distribution/inclui"
+          python3 scripts/test_cli.py "$distribution/inclui"
+
+          INCLUI_BUILD_CONFIGURATION=release \
+            INCLUI_APP_PATH="$distribution/InclUI.app" \
+            INCLUI_SKIP_OPEN=1 \
+            scripts/AbrirInclUI.command
+          codesign --verify --deep --strict "$distribution/InclUI.app"
+          cp .build/checkouts/swift-syntax/LICENSE.txt "$distribution/LICENSE-SwiftSyntax.txt"
+
+          ditto -c -k --keepParent "$distribution" "$RUNNER_TEMP/InclUI-macOS-arm64.zip"
+
+      - name: Publicar no GitHub Releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/InclUI-macOS-arm64.zip" \
+            --verify-tag --title "InclUI $GITHUB_REF_NAME" \
+            --notes 'InclUI.app e CLI inclui compilados para macOS com Apple Silicon (arm64). O app tem assinatura ad hoc, sem notarização da Apple. Para integrar o InclUIPlugin ao Xcode, use o pacote Swift.'

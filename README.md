@@ -59,6 +59,17 @@ deve ser apresentado automaticamente como violação de WCAG.
 
 O package usa SwiftSyntax 602.0.0, correspondente à linha da toolchain Swift 6.2.
 
+## Executáveis para macOS
+
+Em [GitHub Releases](https://github.com/rafael-toneto/InclUI/releases/latest),
+baixe `InclUI-macOS-arm64.zip` para Mac com Apple Silicon. Extraia o ZIP,
+abra `InclUI.app` pelo Finder ou execute `./inclui --help` no Terminal a partir
+da pasta extraída. O app usa assinatura local e pode exigir aprovação do macOS
+na primeira abertura. A integração do plugin com o Xcode usa o pacote Swift.
+
+Para compilar pelo código-fonte, use `swift build --product inclui` para a CLI
+ou o lançador abaixo para instalar o app.
+
 ## Janela para executar a análise
 
 No Finder, abra `scripts/AbrirInclUI.command` uma vez. O lançador compila a interface,

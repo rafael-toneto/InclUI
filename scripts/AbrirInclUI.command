@@ -3,13 +3,14 @@ set -euo pipefail
 
 repo="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$repo"
-swift build --product inclui-gui
+configuration="${INCLUI_BUILD_CONFIGURATION:-debug}"
+swift build --configuration "$configuration" --product inclui-gui
 
-bin_dir="$(swift build --show-bin-path)"
+bin_dir="$(swift build --configuration "$configuration" --show-bin-path)"
 binary="$bin_dir/inclui-gui"
 resource_bundle="$bin_dir/InclUI_inclui-gui.bundle"
 icon_source="$repo/Sources/InclUIGUI/Resources/AppIcon.icon"
-app="$HOME/Applications/InclUI.app"
+app="${INCLUI_APP_PATH:-$HOME/Applications/InclUI.app}"
 
 if [[ ! -f "$binary" || ! -d "$resource_bundle" || ! -f "$icon_source/icon.json" ]]; then
     echo 'O build não produziu o executável ou os recursos necessários.' >&2

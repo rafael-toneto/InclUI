@@ -4,6 +4,16 @@ import SwiftUI
 import InclUIAnalyzer
 import InclUIReporter
 
+private enum InclUIResources {
+    static let bundle: Bundle = {
+        if let url = Bundle.main.url(forResource: "InclUI_inclui-gui", withExtension: "bundle"),
+           let bundle = Bundle(url: url) {
+            return bundle
+        }
+        return .module
+    }()
+}
+
 @main
 struct InclUIGUIApp: App {
     @StateObject private var model = CheckerViewModel()
@@ -11,7 +21,7 @@ struct InclUIGUIApp: App {
     init() {
         // A execução direta pelo SwiftPM não tem o Assets.car do bundle do app.
         guard Bundle.main.object(forInfoDictionaryKey: "CFBundleIconName") == nil,
-              let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
+              let url = InclUIResources.bundle.url(forResource: "AppIcon", withExtension: "png"),
               let icon = NSImage(contentsOf: url) else { return }
         NSApplication.shared.applicationIconImage = icon
     }
@@ -94,7 +104,7 @@ private struct CheckerView: View {
 
     private var header: some View {
         HStack(alignment: .center, spacing: 16) {
-            if let url = Bundle.module.url(forResource: "AppIcon", withExtension: "png"),
+            if let url = InclUIResources.bundle.url(forResource: "AppIcon", withExtension: "png"),
                let image = NSImage(contentsOf: url) {
                 Image(nsImage: image)
                     .resizable()

@@ -3,6 +3,12 @@ work/
 .swiftpm/
 .DS_Store
 output/
+/Relatorios/
+/Demos/
+InclUIReport/
+DerivedData/
+.DerivedData/
+*.app/
 *.pdf
 *.xcodeproj/
 *.xcworkspace/
